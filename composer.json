@@ -1,0 +1,13 @@
+{
+    "name": "jamieburnip/first-discord-bot",
+    "authors": [
+        {
+            "name": "Jamie Burnip",
+            "email": "jamieburnip@gmail.com"
+        }
+    ],
+    "require": {
+        "team-reflex/discord-php": "^4.0",
+        "vlucas/phpdotenv": "^2.4"
+    }
+}
