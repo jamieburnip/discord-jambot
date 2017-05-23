@@ -8,6 +8,12 @@ use Monolog\Logger;
 
 include __DIR__ . '/vendor/autoload.php';
 
+// Create the logger
+$logger = new Logger('my_logger');
+// Now add some handlers
+$logger->pushHandler(new StreamHandler(__DIR__ . '/channel_logs/my_app.log', Logger::DEBUG));
+$logger->pushHandler(new FirePHPHandler());
+
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
