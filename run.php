@@ -2,7 +2,10 @@
 
 use DiceBag\DiceBag;
 use DiceBag\Randomization\MersenneTwister;
-use Discord\DiscordCommandClient;
+use Discord\Discord;
+use Discord\Parts\Channel\Message;
+use Dotenv\Dotenv;
+use Monolog\Handler\FirePHPHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Logger;
 
@@ -14,63 +17,53 @@ $logger = new Logger('my_logger');
 $logger->pushHandler(new StreamHandler(__DIR__ . '/channel_logs/my_app.log', Logger::DEBUG));
 $logger->pushHandler(new FirePHPHandler());
 
-$dotenv = new Dotenv\Dotenv(__DIR__);
+$dotenv = new Dotenv(__DIR__);
 $dotenv->load();
 
-// Create the logger
-$logger = new Logger('my_logger');
-// Now add some handlers
-$logger->pushHandler(new StreamHandler(__DIR__ . '/my_app.log', Logger::DEBUG));
-
-//$discord = new \Discord\Discord([
-//    'token' => getenv('DISCORD_TOKEN'),
-//    'logger' => $logger,
-//]);
-
-$discord = new DiscordCommandClient([
+$discord = new Discord([
     'token' => getenv('DISCORD_TOKEN'),
-//    'logger' => $logger,
+    'logger' => $logger,
 ]);
 
-$discord->registerCommand('roll', function ($message) {
-    $params = explode(' ', $message->content);
+//$discord = new DiscordCommandClient([
+//    'token' => getenv('DISCORD_TOKEN'),
+//]);
+
+//$discord->registerCommand('roll', function ($message) {
+//    $params = explode(' ', $message->content);
 
 //    @jamies-first-bot#2774 roll d20
 
-    $randomizationEngine = new MersenneTwister();
-    $diceBag = DiceBag::factory($params[2], $randomizationEngine);
-
-    $message->getChannelAttribute()->sendMessage($diceBag->getTotal());
-}, [
-    'description' => 'pong!',
-]);
-
-$discord->run();
-
-//$discord->registerCommand('roll', function ($message) {
 //    $randomizationEngine = new MersenneTwister();
-//
-//    $diceBag = DiceBag::factory('d20', $randomizationEngine);
-//
-//    return $diceBag->getTotal();
+//    $diceBag = DiceBag::factory($params[2], $randomizationEngine);
+
+//    $message->getChannelAttribute()->sendMessage($diceBag->getTotal());
 //}, [
-//    'description' => 'Roll the dice!',
+//    'description' => 'pong!',
 //]);
 
-/*$discord->on('ready', function ($discord) {
+//$discord->run();
+
+$discord->on('ready', function ($discord) {
     echo "Bot is ready.", PHP_EOL;
 
     // Listen for events here
-    $discord->on('message', function ($message, $discord) {
-        /** @var \Discord\Parts\Channel\Channel $channel *
-        $channel = $discord->factory(\Discord\Parts\Channel\Channel::class, ['id' => $message['channel_id']]);
+    $discord->on('message', function (Message $message, Discord $discord) {
+        if ($message->author === $discord->user) {
+            return 0;
+        }
 
-        $randomizationEngine = new MersenneTwister();
+        $params = explode(' ', $message->content);
 
-        $diceBag = DiceBag::factory('d20', $randomizationEngine);
+        if (stripos($message->content, '!roll') === 0) {
+            sleep(1);
+            $randomizationEngine = new MersenneTwister();
+            $diceBag = DiceBag::factory($params[1], $randomizationEngine);
+            $message->getChannelAttribute()->sendMessage($diceBag->getTotal() . ' :game_die:');
 
-        $channel->sendMessage($diceBag->getTotal());
+            return 1;
+        }
     });
-});*/
+});
 
-//$discord->run();
+$discord->run();
