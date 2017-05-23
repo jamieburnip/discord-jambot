@@ -8,6 +8,8 @@
     ],
     "require": {
         "team-reflex/discord-php": "^4.0",
-        "vlucas/phpdotenv": "^2.4"
+        "vlucas/phpdotenv": "^2.4",
+        "monolog/monolog": "^1.22",
+        "porthou/dicebag": "^0.0.1"
     }
 }
