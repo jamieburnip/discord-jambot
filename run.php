@@ -11,6 +11,8 @@ use Monolog\Logger;
 
 include __DIR__ . '/vendor/autoload.php';
 
+date_default_timezone_set('UTC');
+
 // Create the logger
 $logger = new Logger('my_logger');
 // Now add some handlers
@@ -54,18 +56,18 @@ $discord->on('ready', function ($discord) {
         }
 
         $params = explode(' ', $message->content);
-        
+
         /* Sleep 1 second to give the illusion of thinking */
         sleep(1);
-        
-        switch($params[0){
+
+        switch ($params[0]) {
             default:
                 return 0;
                 break;
             case '!roll':
                 $randomizationEngine = new MersenneTwister();
                 $diceBag = DiceBag::factory($params[1], $randomizationEngine);
-                $message->getChannelAttribute()->sendMessage($diceBag->getTotal() . ' :game_die:');
+                $message->getChannelAttribute()->sendMessage(sprintf('%s :game_die:', $diceBag->getTotal()));
 
                 return 1;
                 break;
