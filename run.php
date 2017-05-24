@@ -54,14 +54,21 @@ $discord->on('ready', function ($discord) {
         }
 
         $params = explode(' ', $message->content);
+        
+        /* Sleep 1 second to give the illusion of thinking */
+        sleep(1);
+        
+        switch($params[0){
+            default:
+                return 0;
+                break;
+            case '!roll':
+                $randomizationEngine = new MersenneTwister();
+                $diceBag = DiceBag::factory($params[1], $randomizationEngine);
+                $message->getChannelAttribute()->sendMessage($diceBag->getTotal() . ' :game_die:');
 
-        if (stripos($message->content, '!roll') === 0) {
-            sleep(1);
-            $randomizationEngine = new MersenneTwister();
-            $diceBag = DiceBag::factory($params[1], $randomizationEngine);
-            $message->getChannelAttribute()->sendMessage($diceBag->getTotal() . ' :game_die:');
-
-            return 1;
+                return 1;
+                break;
         }
     });
 });
