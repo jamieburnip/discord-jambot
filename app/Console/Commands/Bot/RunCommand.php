@@ -7,7 +7,6 @@ use DiceBag\Randomization\MersenneTwister;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Illuminate\Console\Command;
-use Monolog\Logger;
 
 class RunCommand extends Command
 {
@@ -77,6 +76,34 @@ class RunCommand extends Command
                         $randomizationEngine = new MersenneTwister();
                         $diceBag = DiceBag::factory($params[1], $randomizationEngine);
                         $message->getChannelAttribute()->sendMessage(sprintf('%s :game_die:', $diceBag->getTotal()));
+
+                        return 1;
+                        break;
+                    case '!8ball':
+                        $eightBall = collect([
+                            'It is certain',
+                            'It is decidedly so',
+                            'Without a doubt',
+                            'Yes definitely',
+                            'You may rely on it',
+                            'As I see it, yes',
+                            'Most likely',
+                            'Outlook good',
+                            'Yes',
+                            'Signs point to yes',
+                            'Reply hazy try again',
+                            'Ask again later',
+                            'Better not tell you now',
+                            'Cannot predict now',
+                            'Concentrate and ask again',
+                            'Don\'t count on it',
+                            'My reply is no',
+                            'My sources say no',
+                            'Outlook not so good',
+                            'Very doubtful',
+                        ]);
+
+                        $message->getChannelAttribute()->sendMessage($eightBall->random(1)->first());
 
                         return 1;
                         break;
