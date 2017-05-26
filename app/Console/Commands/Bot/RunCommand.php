@@ -103,7 +103,7 @@ class RunCommand extends Command
                             'Very doubtful',
                         ]);
 
-                        $message->getChannelAttribute()->sendMessage($eightBall->random(1)->first());
+                        $message->getChannelAttribute()->sendMessage(sprintf('%s :8ball:', $eightBall->random(1)->first()));
 
                         return 1;
                         break;
