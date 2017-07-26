@@ -81,29 +81,57 @@ class RunCommand extends Command
                         break;
                     case '!8ball':
                         $eightBall = collect([
-                            'It is certain',
-                            'It is decidedly so',
-                            'Without a doubt',
-                            'Yes definitely',
-                            'You may rely on it',
-                            'As I see it, yes',
-                            'Most likely',
-                            'Outlook good',
-                            'Yes',
-                            'Signs point to yes',
-                            'Reply hazy try again',
-                            'Ask again later',
-                            'Better not tell you now',
-                            'Cannot predict now',
-                            'Concentrate and ask again',
-                            'Don\'t count on it',
-                            'My reply is no',
-                            'My sources say no',
-                            'Outlook not so good',
-                            'Very doubtful',
+                            'positive' => [
+                                'It is certain',
+                                'It is decidedly so',
+                                'Without a doubt',
+                                'Yes definitely',
+                                'You may rely on it',
+                                'As I see it, yes',
+                                'Most likely',
+                                'Outlook good',
+                                'Yes',
+                                'Signs point to yes',
+                            ],
+                            'neutral' => [
+                                'Reply hazy try again',
+                                'Ask again later',
+                                'Better not tell you now',
+                                'Cannot predict now',
+                                'Concentrate and ask again',
+                            ],
+                            'negative' => [
+                                'Don\'t count on it',
+                                'My reply is no',
+                                'My sources say no',
+                                'Outlook not so good',
+                                'Very doubtful',
+                            ],
                         ]);
 
-                        $message->getChannelAttribute()->sendMessage(sprintf('%s :8ball:', $eightBall->random(1)->first()));
+                        if (str_contains(strtolower($message->content), 'jamie')) {
+                            $ml = new \MonkeyLearn\Client('47aaaa3e3ab8ef28cb8bece3bbc1f6dda3821285');
+                            $text_list = [strtolower($message->content)];
+                            $module_id = 'cl_qkjxv9Ly';
+                            $res = $ml->classifiers->classify($module_id, $text_list, true);
+
+                            switch ($res->result[0][0]['label']) {
+                                case 'positive':
+                                    $return = collect($eightBall['positive'])->random();
+                                    break;
+                                case 'negative':
+                                    $return = collect($eightBall['negative'])->random();
+                                    break;
+                                case 'neutral':
+                                default:
+                                    $return = collect($eightBall['neutral'])->random();
+                                    break;
+                            }
+                        } else {
+                            $return = $eightBall->flatten()->random(1)->first();
+                        }
+
+                        $message->getChannelAttribute()->sendMessage(sprintf('%s :8ball:', $return));
 
                         return 1;
                         break;
