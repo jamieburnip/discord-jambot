@@ -110,7 +110,7 @@ class RunCommand extends Command
                         ]);
 
                         if (str_contains(strtolower($message->content), 'jamie')) {
-                            $ml = new \MonkeyLearn\Client('47aaaa3e3ab8ef28cb8bece3bbc1f6dda3821285');
+                            $ml = new \MonkeyLearn\Client(env('MONKEY_LEARN_API_KEY'));
                             $text_list = [strtolower($message->content)];
                             $module_id = 'cl_qkjxv9Ly';
                             $res = $ml->classifiers->classify($module_id, $text_list, true);
