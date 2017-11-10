@@ -1,1 +1,2 @@
 # Jambot
+ Simple discord bot
