@@ -16,7 +16,7 @@ date_default_timezone_set('UTC');
 // Create the logger
 $logger = new Logger('my_logger');
 // Now add some handlers
-$logger->pushHandler(new StreamHandler(__DIR__ . '/channel_logs/my_app.log', Logger::DEBUG));
+$logger->pushHandler(new StreamHandler(__DIR__ . '/storage/channel_logs/my_app.log', Logger::DEBUG));
 $logger->pushHandler(new FirePHPHandler());
 
 $dotenv = new Dotenv(__DIR__);

@@ -8,6 +8,7 @@ use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Illuminate\Console\Command;
 use MonkeyLearn\Client as MonkeyLearnClient;
+use Symfony\Component\Console\Input\InputOption;
 
 class RunCommand extends Command
 {
@@ -34,12 +35,27 @@ class RunCommand extends Command
     protected $description = 'Run the bot';
 
     /**
+     * @var Discord
+     */
+    protected $discord;
+
+    /**
+     * @var MonkeyLearnClient
+     */
+    protected $monkeyLearn;
+
+    /**
      * Create a new bot run command.
-     *
-     * @return void
      */
     public function __construct()
     {
+        $this->discord = new Discord([
+            'token' => env('DISCORD_TOKEN'),
+            'logger' => app('log')
+        ]);
+
+        $this->monkeyLearn = new MonkeyLearnClient(env('MONKEY_LEARN_API_KEY'));
+
         parent::__construct();
     }
 
@@ -50,12 +66,7 @@ class RunCommand extends Command
      */
     public function fire()
     {
-        $discord = new Discord([
-            'token' => env('DISCORD_TOKEN'),
-            'logger' => app('log')
-        ]);
-
-        $discord->on('ready', function ($discord) {
+        $this->discord->on('ready', function ($discord) {
             echo "Bot is ready.", PHP_EOL;
 
             // Listen for events here
@@ -70,9 +81,6 @@ class RunCommand extends Command
                 sleep(1);
 
                 switch ($params[0]) {
-                    default:
-                        return 0;
-                        break;
                     case '!roll':
                         $randomizationEngine = new MersenneTwister();
                         $diceBag = DiceBag::factory($params[1], $randomizationEngine);
@@ -111,10 +119,9 @@ class RunCommand extends Command
                         ]);
 
                         if (str_contains(strtolower($message->content), 'jamie')) {
-                            $ml = new MonkeyLearnClient(env('MONKEY_LEARN_API_KEY'));
                             $text_list = [strtolower($message->content)];
                             $module_id = 'cl_qkjxv9Ly';
-                            $res = $ml->classifiers->classify($module_id, $text_list, true);
+                            $res = $this->monkeyLearn->classifiers->classify($module_id, $text_list, true);
 
                             switch ($res->result[0][0]['label']) {
                                 case 'positive':
@@ -136,11 +143,14 @@ class RunCommand extends Command
 
                         return 1;
                         break;
+                    default:
+                        return 0;
+                        break;
                 }
             });
         });
 
-        $discord->run();
+        $this->discord->run();
     }
 
     /**
