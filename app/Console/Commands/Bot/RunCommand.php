@@ -7,6 +7,7 @@ use DiceBag\Randomization\MersenneTwister;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Illuminate\Console\Command;
+use MonkeyLearn\Client as MonkeyLearnClient;
 
 class RunCommand extends Command
 {
@@ -110,7 +111,7 @@ class RunCommand extends Command
                         ]);
 
                         if (str_contains(strtolower($message->content), 'jamie')) {
-                            $ml = new \MonkeyLearn\Client(env('MONKEY_LEARN_API_KEY'));
+                            $ml = new MonkeyLearnClient(env('MONKEY_LEARN_API_KEY'));
                             $text_list = [strtolower($message->content)];
                             $module_id = 'cl_qkjxv9Ly';
                             $res = $ml->classifiers->classify($module_id, $text_list, true);

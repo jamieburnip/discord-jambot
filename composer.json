@@ -16,7 +16,8 @@
         "vlucas/phpdotenv": "~2.2",
         "team-reflex/discord-php": "^4.0",
         "porthou/dicebag": "^0.0.1",
-        "monkeylearn/monkeylearn-php": "~0.1"
+        "monkeylearn/monkeylearn-php": "~0.1",
+        "bugsnag/bugsnag-laravel": "^2.0"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
