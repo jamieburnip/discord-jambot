@@ -7,7 +7,6 @@ use DiceBag\Randomization\MersenneTwister;
 use Discord\Discord;
 use Discord\Parts\Channel\Message;
 use Illuminate\Console\Command;
-use MonkeyLearn\Client as MonkeyLearnClient;
 use Symfony\Component\Console\Input\InputOption;
 
 class RunCommand extends Command
@@ -40,21 +39,14 @@ class RunCommand extends Command
     protected $discord;
 
     /**
-     * @var MonkeyLearnClient
-     */
-    protected $monkeyLearn;
-
-    /**
      * Create a new bot run command.
      */
     public function __construct()
     {
         $this->discord = new Discord([
             'token' => env('DISCORD_TOKEN'),
-            'logger' => app('log')
+            'logger' => app('log'),
         ]);
-
-        $this->monkeyLearn = new MonkeyLearnClient(env('MONKEY_LEARN_API_KEY'));
 
         parent::__construct();
     }
@@ -84,6 +76,7 @@ class RunCommand extends Command
                     case '!roll':
                         $randomizationEngine = new MersenneTwister();
                         $diceBag = DiceBag::factory($params[1], $randomizationEngine);
+                        var_dump($diceBag->getDicePools());
                         $message->getChannelAttribute()->sendMessage(sprintf('%s :game_die:', $diceBag->getTotal()));
 
                         return 1;
@@ -118,26 +111,7 @@ class RunCommand extends Command
                             ],
                         ]);
 
-                        if (str_contains(strtolower($message->content), 'jamie')) {
-                            $text_list = [strtolower($message->content)];
-                            $module_id = 'cl_qkjxv9Ly';
-                            $res = $this->monkeyLearn->classifiers->classify($module_id, $text_list, true);
-
-                            switch ($res->result[0][0]['label']) {
-                                case 'positive':
-                                    $return = collect($eightBall['positive'])->random();
-                                    break;
-                                case 'negative':
-                                    $return = collect($eightBall['negative'])->random();
-                                    break;
-                                case 'neutral':
-                                default:
-                                    $return = collect($eightBall['neutral'])->random();
-                                    break;
-                            }
-                        } else {
-                            $return = $eightBall->flatten()->random(1)->first();
-                        }
+                        $return = $eightBall->flatten()->random()->first();
 
                         $message->getChannelAttribute()->sendMessage(sprintf('%s :8ball:', $return));
 
@@ -160,15 +134,15 @@ class RunCommand extends Command
      */
     protected function getOptions()
     {
-        return array(
-            array(
+        return [
+            [
                 'host',
                 null,
                 InputOption::VALUE_OPTIONAL,
                 'The host address to serve the application on.',
-                'localhost'
-            ),
-            array('port', null, InputOption::VALUE_OPTIONAL, 'The port to serve the application on.', 8000),
-        );
+                'localhost',
+            ],
+            ['port', null, InputOption::VALUE_OPTIONAL, 'The port to serve the application on.', 8000],
+        ];
     }
 }
