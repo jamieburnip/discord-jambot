@@ -1,0 +1,26 @@
+{
+  "name": "jambot",
+  "description": "A Discord bot!",
+  "version": "0.2.0",
+  "main": "index.js",
+  "repository": "https://github.com/jamieburnip/discord-jambot",
+  "author": "Jamie Burnip",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node .",
+    "develop": "nodemon",
+    "lint": "eslint ."
+  },
+  "dependencies": {
+    "@bugsnag/js": "^6.4.0",
+    "config": "^3.2.2",
+    "dicetower": "^0.2.1",
+    "discord.js": "^11.5.1",
+    "dotenv": "^8.1.0",
+    "eslint": "^6.3.0",
+    "lodash": "^4.17.15",
+    "rpg-dice-roller": "^3.1.5"
+  }
+}
