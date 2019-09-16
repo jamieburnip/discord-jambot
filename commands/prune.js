@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = {
 	name: 'prune',
 	description: 'Prune messages from this channel.',

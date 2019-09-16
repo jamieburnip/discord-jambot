@@ -1,4 +1,4 @@
-const Discord = require('discord.js');
+'use strict';
 
 module.exports = {
 	name: '8ball',
@@ -33,6 +33,7 @@ module.exports = {
 
 		const option = _.nth(data, _.random(data.length));
 
+		// const Discord = require('discord.js');
 		// const exampleEmbedd = new Discord.RichEmbed()
 		// 	.setColor('#00ffce')
 		// 	.setTitle(`${option} :8ball:`)
