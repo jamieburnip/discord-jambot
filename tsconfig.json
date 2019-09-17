@@ -1,14 +1,13 @@
 {
     "compilerOptions": {
-        "rootDir": "./",
-		// "outDir": "/dist",
+        "rootDir": "src",
+		"outDir": "dist",
         "module": "commonjs",
         "noImplicitAny": true,
         "removeComments": true,
         "preserveConstEnums": true,
         "sourceMap": true,
         "target": "es3",
-        "watch": true,
         "lib": ["dom", "es2017"]
     },
     "exclude": [
