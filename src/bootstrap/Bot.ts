@@ -1,9 +1,9 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const bugsnag = require('@bugsnag/js');
-const { prefix, token } = require('./../config');
+// const { prefix, token } = require('./../config');
 
-import { prefix, token } from "./../Config"
+import { prefix, token } from "./../Config";
 
 export default class Bot {
     run(): void {
