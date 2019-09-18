@@ -1,8 +1,6 @@
-const fs = require('fs');
-const Discord = require('discord.js');
-const bugsnag = require('@bugsnag/js');
-// const { prefix, token } = require('./../config');
-
+import * as fs from "fs";
+import * as Discord from "discord.js";
+import * as bugsnag from "@bugsnag/js";
 import { prefix, token } from "./../Config";
 
 export default class Bot {
@@ -17,7 +15,7 @@ export default class Bot {
         // create a new Discord bot client
         const bot = new Discord.Client();
         bot.commands = new Discord.Collection();
-        const commandFiles = fs.readdirSync('./commands')
+        const commandFiles = fs.readdirSync(__dirname + '/../commands')
             .filter(file => file.endsWith('.js'));
     
         for (const file of commandFiles) {

@@ -1,5 +1,3 @@
-'use strict';
-
 import _ from "lodash";
 import { DiceRoller } from "rpg-dice-roller";
 
@@ -7,7 +5,7 @@ module.exports = {
 	name: 'roll',
 	description: 'Dice roller.',
 	args: true,
-	execute(message, args) {
+	execute(message: any, args: any) {
 		// create a new instance of the DiceRoller
 		const diceRoller = new DiceRoller();
 
