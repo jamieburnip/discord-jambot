@@ -2,7 +2,7 @@
   "name": "jambot",
   "description": "A Discord bot!",
   "version": "0.2.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "repository": "https://github.com/jamieburnip/discord-jambot",
   "author": "Jamie Burnip",
   "license": "MIT",
@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc",
-    "develop": "nodemon",
+    "develop": "nodemon dist/index.js",
     "lint": "eslint ."
   },
   "dependencies": {
