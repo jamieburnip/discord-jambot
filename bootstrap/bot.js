@@ -3,12 +3,25 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const bugsnag = require('@bugsnag/js');
-const { prefix, token } = require('./../config');
+const config = require('./../config');
+const pkgcnf = require('./../package.json');
 
-module.exports.run = function() {
+const firebase = require('firebase/app');
+const admin = require('firebase-admin');
+const FieldValue = admin.firestore.FieldValue;
+const serviceAccount = require('./../serviceAccount.json');
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://jambot-cccc6.firebaseio.com"
+});
+
+const db = admin.firestore();
+
+module.exports.run = async => {
 	bugsnag({
 		apiKey: process.env.BUGSNAG_TOKEN,
-		// appVersion: '0.1.0',
+		appVersion: pkgcnf.version,
 		appType: 'bot',
 		releaseStage: process.env.APP_ENV,
 	});
@@ -24,12 +37,40 @@ module.exports.run = function() {
 		bot.commands.set(command.name, command);
 	}
 
+	bot.on('guildCreate', async guildData => {
+		db.collection('guilds').doc(guildData.id).set({
+			guildId: guildData.id,
+			guildName: guildData.name,
+			guildOwner: guildData.owner.user.username,
+			guildOnwerId: guildData.owner.id,
+			guildMemberCount: guildData.memberCount
+		});
+	});
+
 	// when the client is ready, run this code
 	// this event will only trigger one time after logging in
-	bot.once('ready', () => {
-		console.log('JamBot up and running...');
+	bot.on('ready', async () => {		
+		let guildData = bot.guilds.first();
+		bot.guilds.forEach(async (guild) => {
+			db.collection('guilds').doc(guild.id).get().then((q) => {
+				if(!q.exists) {
+					db.collection('guilds').doc(guildData.id).set({
+						guildId: guildData.id,
+						guildName: guildData.name,
+						guildOwner: guildData.owner.user.username,
+						guildOnwerId: guildData.owner.id,
+						guildMemberCount: guildData.memberCount,
+						guildPrefix: '!'
+					});
+				}
+			});
+		});
+
+	 	console.log('JamBot up and running...');
 
 		bot.user.setPresence({ status: 'online', game: { name: '!jambot' } });
+		// bot.user.setActivity(`!help | 1 by jamie`, { url: 'https://kate.js.org' });
+		// bot.user.setUsername('test-jambot');
 
 		// const exampleEmbed = new Discord.RichEmbed()
 		// 	.setColor('#0099ff')
@@ -53,10 +94,24 @@ module.exports.run = function() {
 		if (channel) {
 			// Send the message, mentioning the member
 			// channel.send(exampleEmbed);
+
+// 			channel.send(`= STATISTICS =
+// • Mem Usage  :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
+// • Users      :: ${bot.users.size.toLocaleString()}
+// • Servers    :: ${bot.guilds.size.toLocaleString()}
+// • Channels   :: ${bot.channels.size.toLocaleString()}`, {code: "asciidoc"});
 		}
 	});
 
-	bot.on('message', message => {
+	bot.on('message', async message => {
+		let prefix = config.prefix;
+
+		db.collection('messages').doc(message.id).set({
+			messageId: message.id,
+			messageContent: message.content,
+			messageCreated: message.createdTimestamp
+		});
+
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
 		const args = message.content.slice(prefix.length).split(' ');
@@ -73,17 +128,17 @@ module.exports.run = function() {
 				reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
 			}
 
-			return message.channel.send(reply);
+			return await message.channel.send(reply);
 		}
 
 		try {
-			command.execute(message, args);
+			await command.execute(message, args);
 		} catch (error) {
 			console.error(error);
-			message.reply('there was an error trying to execute that command!');
+			await message.reply('there was an error trying to execute that command!');
 		}
 	});
 
 	// login to Discord with your app's token
-	bot.login(token);
+	bot.login(config.token);
 };

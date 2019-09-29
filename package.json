@@ -1,14 +1,16 @@
 {
   "name": "jambot",
   "description": "A Discord bot!",
-  "version": "0.2.0",
+  "version": "0.0.2",
   "main": "index.js",
   "repository": "https://github.com/jamieburnip/discord-jambot",
-  "author": "Jamie Burnip",
+  "author": {
+    "name": "Jamie Burnip",
+    "email": "jamieburnip@gmail.com",
+    "url": "https://jamieburnip.co.uk"
+  },
   "license": "MIT",
-  "private": true,
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node .",
     "develop": "nodemon",
     "lint": "eslint ."
@@ -19,10 +21,13 @@
     "discord.js": "^11.5.1",
     "dotenv": "^8.1.0",
     "ffmpeg-static": "^2.6.0",
+    "firebase": "^7.0.0",
+    "firebase-admin": "^8.6.0",
     "lodash": "^4.17.15",
     "rpg-dice-roller": "^3.1.5"
   },
   "devDependencies": {
-    "eslint": "^6.4.0"
+    "eslint": "^6.4.0",
+    "nodemon": "^1.19.3"
   }
 }
