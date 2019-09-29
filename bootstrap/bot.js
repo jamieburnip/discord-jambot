@@ -108,6 +108,7 @@ module.exports.run = async => {
 
 		db.collection('messages').doc(message.id).set({
 			messageId: message.id,
+			messageGuildId: message.guild.id,
 			messageContent: message.content,
 			messageCreated: message.createdTimestamp
 		});
