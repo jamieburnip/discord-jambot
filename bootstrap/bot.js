@@ -107,8 +107,10 @@ module.exports.run = async => {
 
 		logger.info('JamBot up and running...');
 
-		bot.user.setPresence({ status: 'online', game: { name: '!jambot' } });
-		// bot.user.setActivity(`!help | 1 by jamie`, { url: 'https://kate.js.org' });
+		bot.user.setActivity('!jambot', {
+			url: 'https://jamieburnip.co.uk',
+			type: 1,
+		});
 		// bot.user.setUsername('test-jambot');
 
 		// const exampleEmbed = new Discord.RichEmbed()
