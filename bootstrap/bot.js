@@ -53,6 +53,15 @@ module.exports.run = async => {
 		let guildData = bot.guilds.first();
 		bot.guilds.forEach(async (guild) => {
 			db.collection('guilds').doc(guild.id).get().then((q) => {
+				guild.members.forEach(async (member) => {
+					q.ref.collection('users').doc(member.user.id).set({
+						userId: member.user.id,
+						userName: member.user.username,
+						userIsBot: member.user.bot,
+						userCreated: member.user.createdTimestamp
+					});
+				});
+
 				if(!q.exists) {
 					db.collection('guilds').doc(guildData.id).set({
 						guildId: guildData.id,
@@ -60,6 +69,7 @@ module.exports.run = async => {
 						guildOwner: guildData.owner.user.username,
 						guildOnwerId: guildData.owner.id,
 						guildMemberCount: guildData.memberCount,
+						guildCreated: guildData.createdTimestamp,
 						guildPrefix: '!'
 					});
 				}
