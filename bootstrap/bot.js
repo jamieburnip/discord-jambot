@@ -18,6 +18,35 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+const winston = require('winston');
+
+let logPrefix = new Date().toISOString().substring(0, 10);
+
+const logger = winston.createLogger({
+	level: 'info',
+	timestamps: true,
+	format: winston.format.json(),
+	defaultMeta: { service: 'user-service' },
+	transports: [
+	  //
+	  // - Write to all logs with level `info` and below to `combined.log` 
+	  // - Write all logs error (and below) to `error.log`.
+	  //
+	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
+	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
+	]
+  });
+  
+  //
+  // If we're not in production then log to the `console` with the format:
+  // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+  // 
+  if (process.env.NODE_ENV !== 'production') {
+	logger.add(new winston.transports.Console({
+	  format: winston.format.simple()
+	}));
+  }
+
 module.exports.run = async => {
 	bugsnag({
 		apiKey: process.env.BUGSNAG_TOKEN,
@@ -76,7 +105,7 @@ module.exports.run = async => {
 			});
 		});
 
-	 	console.log('JamBot up and running...');
+		logger.info('JamBot up and running...');
 
 		bot.user.setPresence({ status: 'online', game: { name: '!jambot' } });
 		// bot.user.setActivity(`!help | 1 by jamie`, { url: 'https://kate.js.org' });
@@ -145,7 +174,7 @@ module.exports.run = async => {
 		try {
 			await command.execute(message, args);
 		} catch (error) {
-			console.error(error);
+			logger.error(error);
 			await message.reply('there was an error trying to execute that command!');
 		}
 	});
