@@ -22,30 +22,30 @@ const winston = require('winston');
 
 let logPrefix = new Date().toISOString().substring(0, 10);
 
-const logger = winston.createLogger({
-	level: 'info',
-	timestamps: true,
-	format: winston.format.json(),
-	defaultMeta: { service: 'user-service' },
-	transports: [
-	  //
-	  // - Write to all logs with level `info` and below to `combined.log` 
-	  // - Write all logs error (and below) to `error.log`.
-	  //
-	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
-	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
-	]
-  });
+// const logger = winston.createLogger({
+// 	level: 'info',
+// 	timestamps: true,
+// 	format: winston.format.json(),
+// 	defaultMeta: { service: 'user-service' },
+// 	transports: [
+// 	  //
+// 	  // - Write to all logs with level `info` and below to `combined.log` 
+// 	  // - Write all logs error (and below) to `error.log`.
+// 	  //
+// 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
+// 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
+// 	]
+//   });
   
-  //
-  // If we're not in production then log to the `console` with the format:
-  // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-  // 
-  if (process.env.NODE_ENV !== 'production') {
-	logger.add(new winston.transports.Console({
-	  format: winston.format.simple()
-	}));
-  }
+//   //
+//   // If we're not in production then log to the `console` with the format:
+//   // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+//   // 
+//   if (process.env.NODE_ENV !== 'production') {
+// 	logger.add(new winston.transports.Console({
+// 	  format: winston.format.simple()
+// 	}));
+//   }
 
 module.exports.run = async => {
 	bugsnag({
@@ -78,7 +78,14 @@ module.exports.run = async => {
 
 	// when the client is ready, run this code
 	// this event will only trigger one time after logging in
-	bot.on('ready', async () => {		
+	bot.on('ready', async () => {
+		// bot.user
+		// 	.setAvatar('https://ih0.redbubble.net/image.625133945.6850/poster,840x830,f8f8f8-pad,750x1000,f8f8f8.u10.jpg')
+		// 	.then(() => {
+		// 		console.log('avatart updated!');
+		// 	}).catch(err => {
+		// 		console.log(err);
+		//	});
 		let guildData = bot.guilds.first();
 		bot.guilds.forEach(async (guild) => {
 			db.collection('guilds').doc(guild.id).get().then((q) => {
@@ -144,15 +151,35 @@ module.exports.run = async => {
 		}
 	});
 
+	function addPoints(message) {
+		if (message.author.bot) return;
+
+		const pointsToIncrement = FieldValue.increment(
+			Math.floor(Math.random() * 15) + 1
+		);
+
+		const guildRef = db.collection('guilds').doc(message.guild.id).collection('users').doc(message.author.id);
+
+		guildRef.update({ points: pointsToIncrement });
+
+		message.channel.send(`You gained points!`);
+		
+		// .get().then((guildQuery) => {
+		// 	guildQuery.ref.collection('users').doc(message.author.id).update({
+
+		// 	});
+		// 	// guildQuery.ref.collection('users').doc(message.author.id).get().then((userQuery) => {
+		// 		// userQuery.ref.collection('points').get().then(pointQuery => {
+		// 			// console.log(pointQuery);
+		// 		// });
+		// 	// });
+		// });
+	}
+
 	bot.on('message', async message => {
 		let prefix = config.prefix;
 
-		db.collection('messages').doc(message.id).set({
-			messageId: message.id,
-			messageGuildId: message.guild.id,
-			messageContent: message.content,
-			messageCreated: message.createdTimestamp
-		});
+		addPoints(message);
 
 		if (!message.content.startsWith(prefix) || message.author.bot) return;
 
