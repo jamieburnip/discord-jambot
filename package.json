@@ -23,7 +23,9 @@
     "ffmpeg-static": "^2.6.0",
     "firebase": "^7.0.0",
     "firebase-admin": "^8.6.0",
+    "fs": "^0.0.1-security",
     "lodash": "^4.17.15",
+    "node-cron": "^2.0.3",
     "rpg-dice-roller": "^3.1.5",
     "winston": "^3.2.1"
   },

@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const cron = require("node-cron");
 const Discord = require('discord.js');
 const bugsnag = require('@bugsnag/js');
 const config = require('./../config');
@@ -135,6 +136,10 @@ module.exports.run = async => {
 		if (channel) {
 			// Send the message, mentioning the member
 			// channel.send(exampleEmbed);
+
+			// cron.schedule("* * * * *", function() {
+			// 	bot.users.find(user => user.id === '237664140515082241').send(`hello from the cron!`);
+			// });
 
 // 			channel.send(`= STATISTICS =
 // • Mem Usage  :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
