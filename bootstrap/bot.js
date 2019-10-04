@@ -1,6 +1,7 @@
 'use strict';
 
 const fs = require('fs');
+const moment = require('moment');
 const Discord = require('discord.js');
 const bugsnag = require('@bugsnag/js');
 const config = require('./../config');
@@ -22,30 +23,30 @@ const winston = require('winston');
 
 let logPrefix = new Date().toISOString().substring(0, 10);
 
-// const logger = winston.createLogger({
-// 	level: 'info',
-// 	timestamps: true,
-// 	format: winston.format.json(),
-// 	defaultMeta: { service: 'user-service' },
-// 	transports: [
-// 	  //
-// 	  // - Write to all logs with level `info` and below to `combined.log` 
-// 	  // - Write all logs error (and below) to `error.log`.
-// 	  //
-// 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
-// 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
-// 	]
-//   });
+const logger = winston.createLogger({
+	level: 'info',
+	timestamps: true,
+	format: winston.format.json(),
+	defaultMeta: { service: 'user-service' },
+	transports: [
+	  //
+	  // - Write to all logs with level `info` and below to `combined.log` 
+	  // - Write all logs error (and below) to `error.log`.
+	  //
+	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
+	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
+	]
+  });
   
-//   //
-//   // If we're not in production then log to the `console` with the format:
-//   // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-//   // 
-//   if (process.env.NODE_ENV !== 'production') {
-// 	logger.add(new winston.transports.Console({
-// 	  format: winston.format.simple()
-// 	}));
-//   }
+  //
+  // If we're not in production then log to the `console` with the format:
+  // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+  // 
+  if (process.env.NODE_ENV !== 'production') {
+	logger.add(new winston.transports.Console({
+	  format: winston.format.simple()
+	}));
+  }
 
 module.exports.run = async => {
 	bugsnag({
@@ -90,12 +91,14 @@ module.exports.run = async => {
 		bot.guilds.forEach(async (guild) => {
 			db.collection('guilds').doc(guild.id).get().then((q) => {
 				guild.members.forEach(async (member) => {
-					q.ref.collection('users').doc(member.user.id).set({
-						userId: member.user.id,
-						userName: member.user.username,
-						userIsBot: member.user.bot,
-						userCreated: member.user.createdTimestamp
-					});
+					// q.ref.collection('users').doc(member.user.id).set({
+					// 	userId: member.user.id,
+					// 	userName: member.user.username,
+					// 	userIsBot: member.user.bot,
+					// 	userCreated: member.user.createdTimestamp,
+					// 	points: 0,
+					// 	pointsUpdatedTimestamp: moment().unix()
+					// });
 				});
 
 				if(!q.exists) {
@@ -152,15 +155,35 @@ module.exports.run = async => {
 	});
 
 	function addPoints(message) {
+		// var a = moment();
+		// var b = moment().subtract(10, 'seconds');
+		// // var b = moment().add(10, 'seconds');
+
+		// console.log(
+		// 	b.isSameOrAfter(a),
+		// 	a.unix()
+		// );
+
 		if (message.author.bot) return;
+
+		let recentlyUpdatedPoints = false;
+
+		const userRef = db.collection('guilds').doc(message.guild.id).collection('users').doc(message.author.id);
+		
+		userRef.get().then((user) => {
+			console.log(user.pointsUpdatedTimestamp);
+		});
+
+		if (recentlyUpdatedPoints) return;
 
 		const pointsToIncrement = FieldValue.increment(
 			Math.floor(Math.random() * 15) + 1
 		);
 
-		const guildRef = db.collection('guilds').doc(message.guild.id).collection('users').doc(message.author.id);
-
-		guildRef.update({ points: pointsToIncrement });
+		userRef.update({
+			points: pointsToIncrement,
+			pointsUpdatedTimestamp: moment().unix()
+		});
 
 		message.channel.send(`You gained points!`);
 		
