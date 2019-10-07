@@ -7,18 +7,6 @@ const bugsnag = require('@bugsnag/js');
 const config = require('./../config');
 const pkgcnf = require('./../package.json');
 
-const firebase = require('firebase/app');
-const admin = require('firebase-admin');
-const FieldValue = admin.firestore.FieldValue;
-const serviceAccount = require('./../serviceAccount.json');
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount),
-  databaseURL: "https://jambot-cccc6.firebaseio.com"
-});
-
-const db = admin.firestore();
-
 const winston = require('winston');
 
 let logPrefix = new Date().toISOString().substring(0, 10);
@@ -36,17 +24,36 @@ const logger = winston.createLogger({
 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-error.log`, level: 'error' }),
 	  new winston.transports.File({ filename: `storage/logs/${logPrefix}-combined.log` })
 	]
-  });
-  
-  //
-  // If we're not in production then log to the `console` with the format:
-  // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
-  // 
-  if (process.env.NODE_ENV !== 'production') {
+});
+
+//
+// If we're not in production then log to the `console` with the format:
+// `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
+// 
+if (process.env.NODE_ENV !== 'production') {
 	logger.add(new winston.transports.Console({
-	  format: winston.format.simple()
+		format: winston.format.simple()
 	}));
-  }
+}
+
+const pgp = require('pg-promise')();
+// const _host = 'ec2-54-247-72-30.eu-west-1.compute.amazonaws.com:5432';
+// const _database = 'd4oihl2688rohc';
+// const _user = 'uzgxxfcndrpwnf';
+// const _password = '0220e67f52e4209b3df20c4ab9fc490f75f7eb31d845f32aef1b3be2db444db9';
+function dbConnect(){
+	if (process.env.DATABASE_URL) {
+		return pgp(process.env.DATABASE_URL);
+	}
+	
+	return pgp(`postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`);
+}
+
+const db = dbConnect();
+
+// db.query('SELECT * FROM guilds').then((eh) => {
+// 	console.log(eh);
+// }).catch(err => logger.error(err.message));
 
 module.exports.run = async => {
 	bugsnag({
@@ -68,13 +75,13 @@ module.exports.run = async => {
 	}
 
 	bot.on('guildCreate', async guildData => {
-		db.collection('guilds').doc(guildData.id).set({
-			guildId: guildData.id,
-			guildName: guildData.name,
-			guildOwner: guildData.owner.user.username,
-			guildOnwerId: guildData.owner.id,
-			guildMemberCount: guildData.memberCount
-		});
+		// db.collection('guilds').doc(guildData.id).set({
+		// 	guildId: guildData.id,
+		// 	guildName: guildData.name,
+		// 	guildOwner: guildData.owner.user.username,
+		// 	guildOnwerId: guildData.owner.id,
+		// 	guildMemberCount: guildData.memberCount
+		// });
 	});
 
 	// when the client is ready, run this code
@@ -88,32 +95,37 @@ module.exports.run = async => {
 		// 		console.log(err);
 		//	});
 		let guildData = bot.guilds.first();
-		bot.guilds.forEach(async (guild) => {
-			db.collection('guilds').doc(guild.id).get().then((q) => {
-				guild.members.forEach(async (member) => {
-					// q.ref.collection('users').doc(member.user.id).set({
-					// 	userId: member.user.id,
-					// 	userName: member.user.username,
-					// 	userIsBot: member.user.bot,
-					// 	userCreated: member.user.createdTimestamp,
-					// 	points: 0,
-					// 	pointsUpdatedTimestamp: moment().unix()
-					// });
-				});
+		let guidInDb;
+		// q.ref.collection('users').doc(member.user.id).set({
+		// 	userId: member.user.id,
+		// 	userName: member.user.username,
+		// 	userIsBot: member.user.bot,
+		// 	userCreated: member.user.createdTimestamp,
+		// 	points: 0,
+		// 	pointsUpdatedTimestamp: moment().unix()
+		// });
 
-				if(!q.exists) {
-					db.collection('guilds').doc(guildData.id).set({
-						guildId: guildData.id,
-						guildName: guildData.name,
-						guildOwner: guildData.owner.user.username,
-						guildOnwerId: guildData.owner.id,
-						guildMemberCount: guildData.memberCount,
-						guildCreated: guildData.createdTimestamp,
-						guildPrefix: '!'
-					});
-				}
+		await db.oneOrNone('SELECT * FROM guilds WHERE guild_id = ${guildId}', {
+			guildId: guildData.id
+		}).then(guild => guidInDb = guild).catch(err => logger.error(err));
+
+		console.log(!guidInDb);
+		if (!guidInDb) { 
+			db.none('INSERT INTO guilds(guild_id, guild_name, guild_owner, guild_owner_id, guild_created, guild_prefix, created_at, updated_at) VALUES(${guildId}, ${guildName}, ${guildOwner}, ${guildOwnerId}, ${guildCreated}, ${guildPrefix}, now(), now())', {
+				guildId: guildData.id,
+				guildName: guildData.name,
+				guildOwner: guildData.owner.user.username,
+				guildOwnerId: guildData.owner.id,
+				guildCreated: guildData.createdTimestamp,
+				guildPrefix: '!'
 			});
-		});
+		}
+		// q.ref.collection('users').doc(member.user.id).set({
+		// 	userId: member.user.id,
+		// 	userName: member.user.username,
+		// 	userIsBot: member.user.bot,
+		// 	userCreated: member.user.createdTimestamp
+		// });
 
 		logger.info('JamBot up and running...');
 
