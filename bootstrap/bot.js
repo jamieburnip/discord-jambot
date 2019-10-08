@@ -36,10 +36,6 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const pgp = require('pg-promise')();
-// const _host = 'ec2-54-247-72-30.eu-west-1.compute.amazonaws.com:5432';
-// const _database = 'd4oihl2688rohc';
-// const _user = 'uzgxxfcndrpwnf';
-// const _password = '0220e67f52e4209b3df20c4ab9fc490f75f7eb31d845f32aef1b3be2db444db9';
 function dbConnect(){
 	if (process.env.DATABASE_URL) {
 		return pgp(process.env.DATABASE_URL);
@@ -47,7 +43,6 @@ function dbConnect(){
 	
 	return pgp(`postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`);
 }
-
 const db = dbConnect();
 
 // db.query('SELECT * FROM guilds').then((eh) => {
