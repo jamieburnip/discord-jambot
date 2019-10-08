@@ -1,6 +1,9 @@
 name: Node CI
 
 on:
+  push:
+    branches: 
+    - master
   pull_request:
     branches:
     - master
@@ -25,3 +28,5 @@ jobs:
         yarn
       env:
         CI: true
+    - name: GitHub Action for Heroku
+      uses: actions/heroku@1.0.0
