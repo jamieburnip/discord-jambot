@@ -23,6 +23,5 @@ jobs:
     - name: npm install, build, and test
       run: |
         yarn
-        yarn lint
       env:
         CI: true
