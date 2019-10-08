@@ -1,6 +1,6 @@
 require('dotenv').config();
 
-module.exports = {
+const config = {
 	prefix: 'jb!',
 	token: process.env.DISCORD_TOKEN,
 	database : {
@@ -11,3 +11,5 @@ module.exports = {
 		password: process.env.DB_PASS,
 	}
 };
+
+export default config;
