@@ -1,5 +1,5 @@
 import fs from 'fs';
-import Discord from 'discord.js';
+import Discord, { Guild } from 'discord.js';
 import bugsnag from '@bugsnag/js';
 
 import config from './Config';
@@ -7,12 +7,12 @@ import config from './Config';
 const pkgcnf = require('./../package.json');
 
 const pgp = require('pg-promise')();
-function dbConnect(){
-	if (process.env.DATABASE_URL) {
-		return pgp(process.env.DATABASE_URL);
-	}
-	
-	return pgp(`postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`);
+function dbConnect() {
+    if (process.env.DATABASE_URL) {
+        return pgp(process.env.DATABASE_URL);
+    }
+
+    return pgp(`postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`);
 }
 const db = dbConnect();
 
@@ -40,17 +40,16 @@ bot.on('guildCreate', async guildData => {
 
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
-bot.on('ready', async () => {		
+bot.on('ready', async () => {
     let guildData = bot.guilds.first();
-    let guidInDb:any = true;
+    let guidInDb: any = true;
 
     await db.oneOrNone('SELECT * FROM guilds WHERE guild_id = ${guildId}', {
         guildId: guildData.id
-    }).then();
-    // }).then(guild => guidInDb = guild).catch(err => console.log(err)); // logger.error(err)
+    }).then((guild: Guild) => guidInDb = guild).catch((err: any) => console.log(err)); // logger.error(err)
 
     console.log(!guidInDb);
-    if (!guidInDb) { 
+    if (!guidInDb) {
         db.none('INSERT INTO guilds(guild_id, guild_name, guild_owner, guild_owner_id, guild_created, guild_prefix, created_at, updated_at) VALUES(${guildId}, ${guildName}, ${guildOwner}, ${guildOwnerId}, ${guildCreated}, ${guildPrefix}, now(), now())', {
             guildId: guildData.id,
             guildName: guildData.name,
@@ -96,14 +95,14 @@ bot.on('ready', async () => {
     // const channel = bot.channels.find(ch => ch.name === 'general');
 
     // if (channel) {
-        // Send the message, mentioning the member
-        // channel.send(exampleEmbed);
+    // Send the message, mentioning the member
+    // channel.send(exampleEmbed);
 
-// 			channel.send(`= STATISTICS =
-// • Mem Usage  :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
-// • Users      :: ${bot.users.size.toLocaleString()}
-// • Servers    :: ${bot.guilds.size.toLocaleString()}
-// • Channels   :: ${bot.channels.size.toLocaleString()}`, {code: "asciidoc"});
+    // 			channel.send(`= STATISTICS =
+    // • Mem Usage  :: ${(process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2)} MB
+    // • Users      :: ${bot.users.size.toLocaleString()}
+    // • Servers    :: ${bot.guilds.size.toLocaleString()}
+    // • Channels   :: ${bot.channels.size.toLocaleString()}`, {code: "asciidoc"});
     // }
 });
 
