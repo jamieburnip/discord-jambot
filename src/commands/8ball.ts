@@ -1,9 +1,9 @@
-'use strict';
+import { Message } from "discord.js";
 
 module.exports = {
 	name: '8ball',
 	description: '8ball!',
-	execute(message, args) {
+	execute(message: Message, args: string[]) {
 		const _ = require('lodash');
 		const data = [
 			// positive

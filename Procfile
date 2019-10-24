@@ -1,1 +1,1 @@
-bot: node .
+bot: yarn run start

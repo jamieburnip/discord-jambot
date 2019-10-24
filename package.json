@@ -11,8 +11,9 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "node .",
-    "develop": "nodemon",
+    "start": "node dist/bot.js",
+    "develop": "nodemon src/bot.ts",
+    "build": "tsc -p .",
     "lint": "eslint ."
   },
   "dependencies": {
@@ -27,7 +28,10 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@types/node": "^12.7.11",
     "eslint": "^6.4.0",
-    "nodemon": "^1.19.3"
+    "nodemon": "^1.19.3",
+    "ts-node": "^8.4.1",
+    "typescript": "^3.6.3"
   }
 }

@@ -1,9 +1,9 @@
-'use strict';
+import { Message } from "discord.js";
 
 module.exports = {
 	name: 'prune',
 	description: 'Prune messages from this channel.',
-	execute(message, args) {
+	execute(message: Message, args: string[]) {
 		const amount = parseInt(args[0]) + 1;
 
 		if (isNaN(amount)) {
