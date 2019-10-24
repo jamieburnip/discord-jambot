@@ -1,4 +1,4 @@
-'use strict';
+import { Message } from "discord.js";
 
 const _ = require('lodash');
 const { DiceRoller } = require('rpg-dice-roller');
@@ -7,7 +7,7 @@ module.exports = {
 	name: 'roll',
 	description: 'Dice roller.',
 	args: true,
-	execute(message, args) {
+	execute(message: Message, args: string[]) {
 		// create a new instance of the DiceRoller
 		const diceRoller = new DiceRoller();
 

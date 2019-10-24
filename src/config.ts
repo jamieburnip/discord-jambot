@@ -1,7 +1,8 @@
 require('dotenv').config();
 
 const config = {
-	prefix: 'jb!',
+	prefix: '!',
+	// prefix: 'jb!',
 	token: process.env.DISCORD_TOKEN,
 	database : {
 		host: process.env.DB_HOST,
