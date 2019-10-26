@@ -18,10 +18,10 @@ const db = dbConnect();
 // create a new Discord bot client
 const bot:{[k: string]: any} = new Discord.Client();
 bot.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+const commandFiles = fs.readdirSync(`${__dirname}/commands`);
 
 for (const file of commandFiles) {
-    const command = require(`./../commands/${file}`);
+    const command = require(`${__dirname}/commands/${file}`);
     bot.commands.set(command.name, command);
 }
 
