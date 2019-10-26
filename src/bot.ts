@@ -2,7 +2,7 @@ import fs from 'fs';
 import Discord, { Guild, Channel, Collection, Message } from 'discord.js';
 import bugsnag from '@bugsnag/js';
 
-import config from './Config';
+import config from './config';
 const pkgcnf = require('./../package.json');
 
 const pgp = require('pg-promise')();
