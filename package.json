@@ -11,10 +11,14 @@
   },
   "license": "MIT",
   "scripts": {
-    "start": "node dist/bot.js",
+    "start": "yarn run serve",
+    "serve": "node dist/bot.js",
     "develop": "nodemon src/bot.ts",
+    "dev": "yarn run develop",
+    "postinstall": "yarn run build",
     "build": "tsc -p .",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "ts-lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
   "dependencies": {
     "@bugsnag/js": "^6.4.0",
