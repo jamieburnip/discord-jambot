@@ -1,6 +1,6 @@
 import { Message } from "discord.js";
 
-import config from './../Config';
+import config from './../config';
 
 module.exports = {
 	name: 'jambot',
