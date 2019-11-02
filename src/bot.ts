@@ -19,6 +19,8 @@ const discord = new Client();
 const commands = new Collection();
 const commandFiles = fs.readdirSync(`${__dirname}/commands`);
 
+const devUser = discord.users.get(config.developerId);
+
 for (const file of commandFiles) {
     const command = require(`${__dirname}/commands/${file}`);
     commands.set(command.name, command);
@@ -44,10 +46,14 @@ discord.on('ready', async () => {
 
     cron.schedule('* * * * * *', () => {
         // discord.users.get(config.developerId)!.send('hi')
+        const dev = discord.users.get(config.developerId);
+
+        // if (dev) dev.send('Ding dong!');
     });
 
     cron.schedule('0 * * * *', () => {
-        setActivity('Ding! Dong!');
+        setActivity('Ding dong!');
+        if (devUser) devUser.send('Ding dong!');
 
         setTimeout(() => {
             setDefaultActivity();
