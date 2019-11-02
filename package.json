@@ -16,7 +16,8 @@
     "develop": "nodemon src/bot.ts",
     "dev": "yarn run develop",
     "postinstall": "yarn run build",
-    "build": "tsc -p .",
+    "build": "yarn run clean && tsc -p .",
+    "clean": "rm -rf dist",
     "lint": "eslint .",
     "ts-lint": "tslint -c tslint.json 'src/**/*.ts'"
   },
