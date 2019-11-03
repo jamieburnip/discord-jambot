@@ -19,8 +19,6 @@ const discord = new Client();
 const commands = new Collection();
 const commandFiles = fs.readdirSync(`${__dirname}/commands`);
 
-const devUser = discord.users.get(config.developerId);
-
 for (const file of commandFiles) {
     const command = require(`${__dirname}/commands/${file}`);
     commands.set(command.name, command);
@@ -42,13 +40,14 @@ const setDefaultActivity = () => {
 discord.on('ready', async () => {
     console.log('JamBot up and running...');
 
+    const devUser = discord.users.get(config.developerId);
+
     setDefaultActivity();
 
     cron.schedule('* * * * * *', () => {
         // discord.users.get(config.developerId)!.send('hi')
-        const dev = discord.users.get(config.developerId);
 
-        // if (dev) dev.send('Ding dong!');
+        // if (devUser) devUser.send('Ding dong!');
     });
 
     cron.schedule('0 * * * *', () => {
