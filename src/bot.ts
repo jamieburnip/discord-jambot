@@ -52,7 +52,7 @@ discord.on('ready', async () => {
 
     cron.schedule('0 * * * *', () => {
         setActivity('Ding dong!');
-        if (devUser) devUser.send('Ding dong!');
+        // if (devUser) devUser.send('Ding dong!');
 
         setTimeout(() => {
             setDefaultActivity();
