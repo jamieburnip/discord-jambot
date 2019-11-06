@@ -45,7 +45,7 @@ discord.on('ready', async () => {
     setDefaultActivity();
 
     cron.schedule('* * * * * *', () => {
-        // discord.users.get(config.developerId)!.send('hi')
+        // discord.users.get(config.developerId)!.send('hi');
 
         // if (devUser) devUser.send('Ding dong!');
     });
