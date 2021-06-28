@@ -1,10 +1,10 @@
 import { Message } from 'discord.js';
+import _ from 'lodash';
 
 module.exports = {
   name: '8ball',
   description: '8ball!',
   execute(message: Message, args: string[]) {
-    const _ = require('lodash');
     const data = [
       // positive
       'It is certain',

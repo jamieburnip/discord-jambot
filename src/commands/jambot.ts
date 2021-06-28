@@ -29,6 +29,7 @@ module.exports = {
           message.reply("I'll DM you hun :wink:");
         })
         .catch((error) => {
+          // eslint-disable-next-line no-console
           console.error(
             `Could not send help DM to ${message.author.tag}.\n`,
             error,

@@ -1,7 +1,7 @@
 import { Message } from 'discord.js';
-
-const _ = require('lodash');
-const { DiceRoller } = require('rpg-dice-roller');
+import _flatten from 'lodash/flatten';
+import _sum from 'lodash/sum';
+import { DiceRoller } from 'rpg-dice-roller';
 
 module.exports = {
   name: 'roll',
@@ -17,8 +17,9 @@ module.exports = {
 
     // get the latest dice rolls from the log
     // let latestRoll = diceRoller.log.shift();
-    let roll = _.flatten(diceRoller.roll(args[0]).export(2).rolls);
-    let rollSum = _.sum(roll);
+    // TODO: DON'T FORGET ABOUT THIS ERROR
+    const roll = _flatten(diceRoller.roll(args[0]).export(2).rolls);
+    const rollSum = _sum(roll);
 
     // output the latest roll - it has a toString method for nice output
     // console.log(diceRoller.log);
