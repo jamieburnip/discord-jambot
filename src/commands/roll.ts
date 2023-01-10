@@ -12,18 +12,18 @@ module.exports = {
     const diceRoller = new DiceRoller();
 
     // roll the dice
-    // diceRoller.roll('4d20');
-    // diceRoller.roll(args[0]);
+    diceRoller.roll('4d20');
+    diceRoller.roll(args[0]);
 
     // get the latest dice rolls from the log
-    // let latestRoll = diceRoller.log.shift();
+    let latestRoll = diceRoller.log.shift();
+
     // TODO: DON'T FORGET ABOUT THIS ERROR
     const roll = _flatten(diceRoller.roll(args[0]).export(2).rolls);
     const rollSum = _sum(roll);
 
     // output the latest roll - it has a toString method for nice output
-    // console.log(diceRoller.log);
-
+    console.log(diceRoller.log);
     message.channel.send(`${rollSum} (${roll}) :game_die:`);
   },
 };

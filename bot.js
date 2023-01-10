@@ -1,68 +1,68 @@
 const fs = require('fs');
 const Discord = require('discord.js');
-const bugsnag = require('@bugsnag/js');
-const config = require('./../config');
-const pkgcnf = require('./../package.json');
+// const bugsnag = require('@bugsnag/js');
+// const winston = require('winston');
 
-const winston = require('winston');
+// const config = require('./../config/bot');
+// const pkgcnf = require('./../package.json');
 
-let logPrefix = new Date().toISOString().substring(0, 10);
+// let logPrefix = new Date().toISOString().substring(0, 10);
 
-const logger = winston.createLogger({
-  level: 'info',
-  timestamps: true,
-  format: winston.format.json(),
-  defaultMeta: { service: 'user-service' },
-  transports: [
-    //
-    // - Write to all logs with level `info` and below to `combined.log`
-    // - Write all logs error (and below) to `error.log`.
-    //
-    new winston.transports.File({
-      filename: `storage/logs/${logPrefix}-error.log`,
-      level: 'error',
-    }),
-    new winston.transports.File({
-      filename: `storage/logs/${logPrefix}-combined.log`,
-    }),
-  ],
-});
+// const logger = winston.createLogger({
+//   level: 'info',
+//   timestamps: true,
+//   format: winston.format.json(),
+//   defaultMeta: { service: 'user-service' },
+//   transports: [
+//     //
+//     // - Write to all logs with level `info` and below to `combined.log`
+//     // - Write all logs error (and below) to `error.log`.
+//     //
+//     new winston.transports.File({
+//       filename: `storage/logs/${logPrefix}-error.log`,
+//       level: 'error',
+//     }),
+//     new winston.transports.File({
+//       filename: `storage/logs/${logPrefix}-combined.log`,
+//     }),
+//   ],
+// });
 
 //
 // If we're not in production then log to the `console` with the format:
 // `${info.level}: ${info.message} JSON.stringify({ ...rest }) `
 //
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(
-    new winston.transports.Console({
-      format: winston.format.simple(),
-    }),
-  );
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   logger.add(
+//     new winston.transports.Console({
+//       format: winston.format.simple(),
+//     }),
+//   );
+// }
 
-const pgp = require('pg-promise')();
-function dbConnect() {
-  if (process.env.DATABASE_URL) {
-    return pgp(process.env.DATABASE_URL);
-  }
+// const pgp = require('pg-promise')();
+// function dbConnect() {
+//   if (process.env.DATABASE_URL) {
+//     return pgp(process.env.DATABASE_URL);
+//   }
 
-  return pgp(
-    `postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`,
-  );
-}
+//   return pgp(
+//     `postgres://${config.database.user}:${config.database.password}@${config.database.host}:${config.database.port}/${config.database.database}`,
+//   );
+// }
 
-const db = dbConnect();
+// const db = dbConnect();
 
 // db.query('SELECT * FROM guilds').then((eh) => {
 // 	console.log(eh);
 // }).catch(err => logger.error(err.message));
 
-bugsnag({
-  apiKey: process.env.BUGSNAG_TOKEN,
-  appVersion: pkgcnf.version,
-  appType: 'bot',
-  releaseStage: process.env.APP_ENV,
-});
+// bugsnag({
+//   apiKey: process.env.BUGSNAG_TOKEN,
+//   appVersion: pkgcnf.version,
+//   appType: 'bot',
+//   releaseStage: process.env.APP_ENV,
+// });
 
 // create a new Discord bot client
 const bot = new Discord.Client();
@@ -76,43 +76,43 @@ for (const file of commandFiles) {
   bot.commands.set(command.name, command);
 }
 
-bot.on('guildCreate', async (guildData) => {
-  // db.collection('guilds').doc(guildData.id).set({
-  // 	guildId: guildData.id,
-  // 	guildName: guildData.name,
-  // 	guildOwner: guildData.owner.user.username,
-  // 	guildOnwerId: guildData.owner.id,
-  // 	guildMemberCount: guildData.memberCount
-  // });
-});
+// bot.on('guildCreate', async (guildData) => {
+// db.collection('guilds').doc(guildData.id).set({
+// 	guildId: guildData.id,
+// 	guildName: guildData.name,
+// 	guildOwner: guildData.owner.user.username,
+// 	guildOnwerId: guildData.owner.id,
+// 	guildMemberCount: guildData.memberCount
+// });
+// });
 
 // when the client is ready, run this code
 // this event will only trigger one time after logging in
 bot.on('ready', async () => {
-  let guildData = bot.guilds.first();
-  let guidInDb;
+  // let guildData = bot.guilds.first();
+  // let guidInDb;
 
-  await db
-    .oneOrNone('SELECT * FROM guilds WHERE guild_id = ${guildId}', {
-      guildId: guildData.id,
-    })
-    .then((guild) => (guidInDb = guild))
-    .catch((err) => logger.error(err));
+  // await db
+  //   .oneOrNone('SELECT * FROM guilds WHERE guild_id = ${guildId}', {
+  //     guildId: guildData.id,
+  //   })
+  //   .then((guild) => (guidInDb = guild))
+  //   .catch((err) => logger.error(err));
 
-  console.log(!guidInDb);
-  if (!guidInDb) {
-    db.none(
-      'INSERT INTO guilds(guild_id, guild_name, guild_owner, guild_owner_id, guild_created, guild_prefix, created_at, updated_at) VALUES(${guildId}, ${guildName}, ${guildOwner}, ${guildOwnerId}, ${guildCreated}, ${guildPrefix}, now(), now())',
-      {
-        guildId: guildData.id,
-        guildName: guildData.name,
-        guildOwner: guildData.owner.user.username,
-        guildOwnerId: guildData.owner.id,
-        guildCreated: guildData.createdTimestamp,
-        guildPrefix: '!',
-      },
-    );
-  }
+  // console.log(!guidInDb);
+  // if (!guidInDb) {
+  //   db.none(
+  //     'INSERT INTO guilds(guild_id, guild_name, guild_owner, guild_owner_id, guild_created, guild_prefix, created_at, updated_at) VALUES(${guildId}, ${guildName}, ${guildOwner}, ${guildOwnerId}, ${guildCreated}, ${guildPrefix}, now(), now())',
+  //     {
+  //       guildId: guildData.id,
+  //       guildName: guildData.name,
+  //       guildOwner: guildData.owner.user.username,
+  //       guildOwnerId: guildData.owner.id,
+  //       guildCreated: guildData.createdTimestamp,
+  //       guildPrefix: '!',
+  //     },
+  //   );
+  // }
   // q.ref.collection('users').doc(member.user.id).set({
   // 	userId: member.user.id,
   // 	userName: member.user.username,
@@ -120,7 +120,7 @@ bot.on('ready', async () => {
   // 	userCreated: member.user.createdTimestamp
   // });
 
-  logger.info('JamBot up and running...');
+  // logger.info('JamBot up and running...');
 
   bot.user.setActivity('!jambot', {
     url: 'https://jamieburnip.co.uk',
@@ -159,7 +159,7 @@ bot.on('ready', async () => {
 });
 
 bot.on('message', async (message) => {
-  let prefix = config.prefix;
+  let prefix = '!'; //config.prefix;
 
   // db.collection('messages').doc(message.id).set({
   // 	messageId: message.id,
@@ -191,7 +191,7 @@ bot.on('message', async (message) => {
   try {
     await command.execute(message, args);
   } catch (error) {
-    logger.error(error);
+    // logger.error(error);
     await message.reply(
       'there was an error trying to execute that command!',
     );
@@ -199,4 +199,6 @@ bot.on('message', async (message) => {
 });
 
 // login to Discord with your app's token
-bot.login(config.token);
+bot.login(
+  'MzExOTY1MDk2MDQ4MDY2NTYx.GK7rzA.faYW280UILioqnDPA3f0jsvatQNv-DUs5F70_8',
+); //config.token);
