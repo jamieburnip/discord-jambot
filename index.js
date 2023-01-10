@@ -6,6 +6,7 @@ const {
   Collection,
   Events,
 } = require('discord.js');
+const { token } = require('./config');
 const client = new Client({ intents: [GatewayIntentBits.Guilds] });
 const wait = require('node:timers/promises').setTimeout;
 
@@ -63,6 +64,4 @@ client.on(Events.InteractionCreate, async (interaction) => {
   }
 });
 
-client.login(
-  `MzExOTY1MDk2MDQ4MDY2NTYx.GK7rzA.faYW280UILioqnDPA3f0jsvatQNv-DUs5F70_8`,
-);
+client.login(token);
